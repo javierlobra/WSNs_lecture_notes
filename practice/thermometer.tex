@@ -2,15 +2,19 @@
 
 
 \section{Preparing your development environment}
-For Practice~\ref{pract:blinkingLED}, you will need:
+In this Practice~\ref{pract:blinkingLED},  you will learn how to use two different types of temperature sensors for arduino, one analog and one digital.
+You will need the following items:
 \begin{itemize}
  \item LM35 thermometer
+ \item DHT11 or DHT22 thermometer
+ \item 10K resistor
  \item a USB cable to connect your Arduino board to the PC.
  \item the Arduino IDE, up and running.
 \end{itemize}
 
-Prepare the setting as in Figs. \ref{fig:thermometer-fritzing} and \ref{fig:thermometer-photo}.
+\section{LM35 Analog Temperature sensor} 
 
+Prepare the setting as in Figs. \ref{fig:thermometer-fritzing} and \ref{fig:thermometer-photo}.
 
 \begin{figure}[htbp]
   \centering
@@ -26,7 +30,6 @@ Prepare the setting as in Figs. \ref{fig:thermometer-fritzing} and \ref{fig:ther
   \label{fig:thermometer-photo}
 \end{figure}
 
-\section{The code} 
 Once inside, enter the following code:
 
 \begin{lstlisting} [caption = {Blinking LED example code}, language = C, label = {code:blinkingLED}, numbers = left, escapeinside={@}{@}]
@@ -57,6 +60,87 @@ void loop() {
 
 If you open the serial monitor, you should obtain results such as the ones in Fig.~\ref{fig:temperature-measures}.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\linewidth]{figures/temperature-measures.eps}
+  \caption{Thermometer.}
+  \label{fig:temperature-measures}
+\end{figure}
+
+
+
+\section{DHT11/DHT22 Digital Temperature sensor}
+
+For using this sensor you should first download the libraries from here .Click on the Downloads button in the top right corner and rename the uncompressed folder as DHT. Later place this folder in your Arduino/libraries path. 
+
+Restart the IDE for start using it. Go to the File menu and open the DHT example called DHTtester to proceed.
+
+Prepare the setting as in Figs. \ref{fig:thermometer-fritzing} and \ref{fig:thermometer-photo}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\linewidth]{figures/thermometer-fritzing.eps}
+  \caption{Thermometer.}
+  \label{fig:thermometer-fritzing}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.7\linewidth]{figures/thermometer-photo.eps}
+  \caption{Thermometer.}
+  \label{fig:thermometer-photo}
+\end{figure}
+
+Once inside, upload the DHTtester to proceed. Do not forget to uncomment the row from the code concerning the type of sensor you are using: the DHT11 or DHT22.
+
+\begin{lstlisting} [caption = {DHT example code}, language = C, label = {code:dht}, numbers = left, escapeinside={@}{@}]
+// Example testing sketch for various DHT humidity/temperature sensors
+// Written by ladyada, public domain
+
+#include "DHT.h"
+
+#define DHTPIN 2     // what pin we're connected to
+
+// Uncomment whatever type you're using!
+#define DHTTYPE DHT11   // DHT 11 
+//#define DHTTYPE DHT22   // DHT 22  (AM2302)
+//#define DHTTYPE DHT21   // DHT 21 (AM2301)
+
+// Connect pin 1 (on the left) of the sensor to +5V
+// Connect pin 2 of the sensor to whatever your DHTPIN is
+// Connect pin 4 (on the right) of the sensor to GROUND
+// Connect a 10K resistor from pin 2 (data) to pin 1 (power) of the sensor
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600); 
+  Serial.println("DHTxx test!");
+ 
+  dht.begin();
+}
+
+void loop() {
+  // Reading temperature or humidity takes about 250 milliseconds!
+  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  // check if returns are valid, if they are NaN (not a number) then something went wrong!
+  if (isnan(t) || isnan(h)) {
+    Serial.println("Failed to read from DHT");
+  } else {
+    Serial.print("Humidity: "); 
+    Serial.print(h);
+    Serial.print(" %\t");
+    Serial.print("Temperature: "); 
+    Serial.print(t);
+    Serial.println(" *C");
+  }
+}
+\end{lstlisting}
+
+If you open the serial monitor, you should obtain results such as the ones in Fig.~\ref{fig:temperature-measures}.
 
 \begin{figure}[htbp]
   \centering
@@ -65,8 +149,12 @@ If you open the serial monitor, you should obtain results such as the ones in Fi
   \label{fig:temperature-measures}
 \end{figure}
 
-Try touching the thermometer with your finger and see how the temperature changes. What if you blow a little bit of cool air towards it?
 
 \section{Next Steps}
+
+Try touching the thermometers with your fingers and see how the temperature changes. What if you blow a little bit of cool air towards it? 
+
+Compare the values that give both sensors at once. Do they differ much?
+
 There is not much networking in this thermometer now.
 Let's send the data to a remote computer using an XBee.
